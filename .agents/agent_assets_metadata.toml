@@ -1,0 +1,62 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "Z9Lbzhpsqbqs36d-MxI7H"
+uri = "file://mehndi-app/assets/images/cat-hand.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "r_oFnaBupk-Rozo5c-qod"
+uri = "file://mehndi-app/assets/images/cat-backhand.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "cQx7-_VZ1gEoRB3PN2qOE"
+uri = "file://mehndi-app/assets/images/cat-arm.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "wC-zSppD79dPItho0MTwq"
+uri = "file://mehndi-app/assets/images/cat-foot.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Z-n09x6HYXO-zHLtz8SJE"
+uri = "file://mehndi-app/assets/images/cat-bridal.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "SB5I1s5EylkvOhPNC9jNZ"
+uri = "file://mehndi-app/assets/images/cat-goltikki.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "L42wZgV7N5b5OUVvYO0_w"
+uri = "file://mehndi-app/assets/images/cat-finger.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "KIPNlX1DkcBzqYoDen5ra"
+uri = "file://mehndi-app/assets/images/cat-kids.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "8Rw9zpJc9Es1S2GxNIpAB"
+uri = "file://mehndi-app/assets/images/d-hand-1.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "XXga1jM8AHyQ3NPgwUaUn"
+uri = "file://mehndi-app/assets/images/d-hand-2.png"
+type = "image"
+title = "generated_image"
