@@ -34,6 +34,6 @@ localPort = 5000
 externalPort = 80
 
 [deployment]
-deploymentTarget = "static"
+deploymentTarget = "cloudrun"
 build = ["bash", "-c", "cd mehndi-app && npx expo export --platform web"]
 publicDir = "mehndi-app/dist"

@@ -10,6 +10,7 @@ export default function RootLayout() {
         <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="category/[id]" options={{ headerShown: false }} />
+          <Stack.Screen name="design" options={{ headerShown: false }} />
         </Stack>
         <StatusBar style="light" />
       </SafeAreaProvider>

@@ -8,6 +8,7 @@ import {
   Image,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -15,7 +16,13 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { CATEGORIES, MehndiDesign } from '@/data/mehndi-data';
+import {
+  CATEGORIES,
+  MehndiDesign,
+  SKIN_TONE_COLORS,
+  SKIN_TONE_LABELS,
+  SkinTone,
+} from '@/data/mehndi-data';
 
 const { width } = Dimensions.get('window');
 const CARD_GAP = 10;
@@ -28,23 +35,48 @@ const COLORS = {
   header: '#0E0E0E',
   gold: '#C9A84C',
   goldLight: '#E8C96A',
-  goldGlow: 'rgba(201,168,76,0.25)',
   white: '#FFFFFF',
   white60: 'rgba(255,255,255,0.6)',
-  dark60: 'rgba(0,0,0,0.60)',
   border: 'rgba(201,168,76,0.3)',
   cardBg: '#141414',
+  chipBg: '#1A1A1A',
+  chipActive: 'rgba(201,168,76,0.18)',
 };
 
-function DesignCard({ design, isFavorite, onToggleFavorite }: {
+const ALL_TONES: Array<'all' | SkinTone> = ['all', 'fair', 'wheatish', 'dusky', 'deep'];
+const TONE_CHIP_LABELS: Record<string, string> = {
+  all: 'All',
+  fair: 'Fair',
+  wheatish: 'Wheatish',
+  dusky: 'Dusky',
+  deep: 'Deep',
+};
+
+function SkinDot({ tone }: { tone: SkinTone }) {
+  return (
+    <View style={[styles.skinDot, { backgroundColor: SKIN_TONE_COLORS[tone] }]} />
+  );
+}
+
+function DesignCard({
+  design,
+  isFavorite,
+  onToggleFavorite,
+  onPress,
+}: {
   design: MehndiDesign;
   isFavorite: boolean;
   onToggleFavorite: (id: string) => void;
+  onPress: () => void;
 }) {
   return (
-    <View style={styles.designCard}>
+    <Pressable style={({ pressed }) => [styles.designCard, { opacity: pressed ? 0.9 : 1 }]} onPress={onPress}>
       <Image source={design.image} style={styles.designImage} resizeMode="cover" />
       <View style={styles.designOverlay} />
+      <View style={styles.skinBadge}>
+        <SkinDot tone={design.skinTone} />
+        <Text style={styles.skinBadgeText}>{SKIN_TONE_LABELS[design.skinTone]}</Text>
+      </View>
       <TouchableOpacity
         style={styles.heartBtn}
         onPress={() => {
@@ -59,7 +91,7 @@ function DesignCard({ design, isFavorite, onToggleFavorite }: {
           color={isFavorite ? COLORS.goldLight : COLORS.white}
         />
       </TouchableOpacity>
-    </View>
+    </Pressable>
   );
 }
 
@@ -71,16 +103,32 @@ export default function CategoryScreen() {
 
   const category = CATEGORIES.find((c) => c.id === id);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [activeTone, setActiveTone] = useState<'all' | SkinTone>('all');
+
+  const filtered = category
+    ? activeTone === 'all'
+      ? category.designs
+      : category.designs.filter((d) => d.skinTone === activeTone)
+    : [];
 
   const toggleFavorite = (designId: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setFavorites((prev) => {
       const next = new Set(prev);
-      if (next.has(designId)) {
-        next.delete(designId);
-      } else {
-        next.add(designId);
-      }
+      if (next.has(designId)) next.delete(designId);
+      else next.add(designId);
       return next;
+    });
+  };
+
+  const openDesign = (design: MehndiDesign) => {
+    router.push({
+      pathname: '/design',
+      params: {
+        catId: id,
+        designId: design.id,
+        catName: category?.name ?? '',
+      },
     });
   };
 
@@ -105,18 +153,50 @@ export default function CategoryScreen() {
         <View style={styles.backBtn} />
       </View>
 
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.filterRow}
+        style={styles.filterScroll}
+      >
+        {ALL_TONES.map((tone) => {
+          const isActive = activeTone === tone;
+          return (
+            <Pressable
+              key={tone}
+              style={[styles.chip, isActive && styles.chipActive]}
+              onPress={() => setActiveTone(tone)}
+            >
+              {tone !== 'all' && (
+                <View style={[styles.chipDot, { backgroundColor: SKIN_TONE_COLORS[tone as SkinTone] }]} />
+              )}
+              <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
+                {TONE_CHIP_LABELS[tone]}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+
       <FlatList
-        data={category.designs}
+        data={filtered}
         keyExtractor={(item) => item.id}
         numColumns={2}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.grid}
         columnWrapperStyle={styles.row}
+        ListEmptyComponent={
+          <View style={styles.emptyBox}>
+            <Ionicons name="color-palette-outline" size={36} color={COLORS.gold} />
+            <Text style={styles.emptyText}>No designs for this skin tone</Text>
+          </View>
+        }
         renderItem={({ item }) => (
           <DesignCard
             design={item}
             isFavorite={favorites.has(item.id)}
             onToggleFavorite={toggleFavorite}
+            onPress={() => openDesign(item)}
           />
         )}
       />
@@ -133,7 +213,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     paddingHorizontal: 8,
-    paddingBottom: 16,
+    paddingBottom: 14,
     backgroundColor: COLORS.header,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
@@ -151,7 +231,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: COLORS.goldLight,
-    fontSize: 20,
+    fontSize: 19,
     fontWeight: '700',
     letterSpacing: 3,
     textTransform: 'uppercase',
@@ -161,6 +241,47 @@ const styles = StyleSheet.create({
     height: 1.5,
     backgroundColor: COLORS.gold,
     opacity: 0.7,
+  },
+  filterScroll: {
+    backgroundColor: COLORS.header,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(201,168,76,0.12)',
+  },
+  filterRow: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    gap: 8,
+    flexDirection: 'row',
+  },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(201,168,76,0.25)',
+    backgroundColor: COLORS.chipBg,
+  },
+  chipActive: {
+    backgroundColor: COLORS.chipActive,
+    borderColor: COLORS.gold,
+  },
+  chipDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  chipText: {
+    color: COLORS.white60,
+    fontSize: 12,
+    fontWeight: '500',
+    letterSpacing: 0.5,
+  },
+  chipTextActive: {
+    color: COLORS.goldLight,
+    fontWeight: '700',
   },
   grid: {
     paddingHorizontal: H_PAD,
@@ -193,14 +314,50 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.12)',
+    backgroundColor: 'rgba(0,0,0,0.1)',
+  },
+  skinBadge: {
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+  },
+  skinDot: {
+    width: 9,
+    height: 9,
+    borderRadius: 5,
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.3)',
+  },
+  skinBadgeText: {
+    color: COLORS.white,
+    fontSize: 10,
+    fontWeight: '500',
+    letterSpacing: 0.3,
   },
   heartBtn: {
     position: 'absolute',
     top: 10,
     right: 10,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.55)',
     borderRadius: 20,
     padding: 6,
+  },
+  emptyBox: {
+    flex: 1,
+    alignItems: 'center',
+    paddingTop: 60,
+    gap: 12,
+  },
+  emptyText: {
+    color: COLORS.white60,
+    fontSize: 13,
+    letterSpacing: 0.3,
   },
 });
