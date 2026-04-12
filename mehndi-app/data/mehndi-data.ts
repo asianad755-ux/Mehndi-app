@@ -7,6 +7,7 @@ export interface MehndiDesign {
   style: string;
 }
 
+
 export interface MehndiCategory {
   id: string;
   name: string;
