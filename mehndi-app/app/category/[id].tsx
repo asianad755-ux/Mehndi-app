@@ -248,40 +248,43 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(201,168,76,0.12)',
   },
   filterRow: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     flexDirection: 'row',
+    alignItems: 'center',
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 20,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 22,
     borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.25)',
-    backgroundColor: COLORS.chipBg,
+    borderColor: 'rgba(201,168,76,0.3)',
+    backgroundColor: '#222222', // Slightly brighter background for inactive tabs
+    marginRight: 16, // Added more space between tabs
   },
   chipActive: {
-    backgroundColor: COLORS.chipActive,
-    borderColor: COLORS.gold,
+    backgroundColor: 'rgba(201,168,76,0.2)', // Brighter active background
+    borderColor: '#E8C96A', // Brighter border
   },
   chipDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 8,
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.5)',
   },
   chipText: {
-    color: COLORS.white60,
-    fontSize: 12,
-    fontWeight: '500',
+    color: '#E0E0E0', // Clearer inactive text
+    fontSize: 14,
+    fontWeight: '600', // Made inactive text slightly bolder
     letterSpacing: 0.5,
   },
   chipTextActive: {
-    color: COLORS.goldLight,
-    fontWeight: '700',
+    color: '#FFEA9E', // Brightest gold for active text
+    fontWeight: '800', // Bolder active text
   },
   grid: {
     paddingHorizontal: H_PAD,
